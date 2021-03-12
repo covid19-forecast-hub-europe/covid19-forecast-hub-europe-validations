@@ -10,6 +10,7 @@ import os
 import json
 import glob
 from github import Github
+import github
 import urllib.request
 import sys
 import shutil
@@ -38,6 +39,8 @@ if token is None:
     g = Github()
 else:
     g = Github(token)
+
+# mount repository
 repo_name = os.environ.get('GITHUB_REPOSITORY')
 if repo_name is None:
     repo_name = 'epiforecasts/covid19-forecast-hub-europe'
@@ -49,7 +52,7 @@ print(f"Github event name: {os.environ.get('GITHUB_EVENT_NAME')}")
 if not local:
     event = json.load(open(os.environ.get('GITHUB_EVENT_PATH')))
 else:
-    event = json.load(open("test/test_event.json"))
+    event = json.load(open("local/test_event.json"))
     
 pr = None
 comment = ''
@@ -105,11 +108,11 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
 
     if deleted_forecasts:
         pr.add_to_labels('forecast-deleted')
-        comment += "\n Your submission seem to have deleted some forecasts. Could you provide a reason for the updation/deletion? Thank you!\n\n"
+        comment += "\n Your submission seem to have deleted some forecasts. Could you provide a reason for the deletion? Thank you!\n\n"
         
     if changed_forecasts:
         pr.add_to_labels('forecast-updated')
-        comment += "\n Your submission seem to have updated/renamed some forecasts. Could you provide a reason for the updation/deletion? Thank you!\n\n"
+        comment += "\n Your submission seem to have updated/renamed some forecasts. Could you provide a reason? Thank you!\n\n"
     
 # Download all forecasts
 # create a forecasts directory
@@ -117,11 +120,13 @@ os.makedirs('forecasts', exist_ok=True)
 
 # Download all forecasts changed in the PR into the forecasts folder
 for f in forecasts:
-    urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
+    if f.status != "removed":
+        urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
 
 # Download all metadat files changed in the PR into the forecasts folder
 for f in metadatas:
-    urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
+    if f.status != "removed":
+        urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
     
 # Run validations on each of these files
 errors = {}
@@ -133,21 +138,43 @@ for file in glob.glob("forecasts/*.csv"):
 FILEPATH_META = "forecasts/"
 is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
 
+# list contains all changes in the data_processed folder
+data_processed_changes = forecasts + forecasts_err + metadatas + other_files
+if data_processed_changes:
+    # check if metadata file is present in main repo
+    if not metadatas:
+        
+        # get all team_model-names in commit (usually only one)
+        team_names = []
+        for file in data_processed_changes:
+            team_names.append(file.contents_url.split("/")[-2])
+        team_names = set(team_names)
+        
+        # if the PR doesnt add a metadatafile we have to check if there is a existing file in the main repo
+        for name in team_names:
+            try:
+                repo.get_contents("data-processed/{}/metadata-{}.txt".format(name, name))
+            
+            # metadata file doesnt exist and is not added in the PR
+            except github.UnknownObjectException:
+                is_meta_error = True
+                meta_err_output["{}/metadata-{}.txt".format(name, name)] = ["Missing Metadata"]
+
 # look for .csv files that dont match pat regex
 for file in other_files:
     if file.filename[:14] == "data-processed" and ".csv" in file.filename:
-        
-        print(file.filename)
+        #print(file.filename)
         err_message = "File does not match forecast file naming convention: <date>-<team>-<model>.csv"
         errors[file.filename] = [err_message]
 
 if len(errors) > 0:
     comment+="\n\n Your submission has some validation errors. Please check the logs of the build under the \"Checks\" tab to get more details about the error. "
-    print_output_errors(errors, prefix='data')
+print_output_errors(errors, prefix='data')
 
 if is_meta_error:
     comment+="\n\n Your submission has some metadata validation errors. Please check the logs of the build under the \"Checks\" tab to get more details about the error. "
-    print_output_errors(meta_err_output, prefix="metadata")
+print_output_errors(meta_err_output, prefix="metadata")
+
 
 # add the consolidated comment to the PR
 if comment!='' and not local:
