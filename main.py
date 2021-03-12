@@ -175,12 +175,22 @@ if is_meta_error:
     comment+="\n\n Your submission has some metadata validation errors. Please check the logs of the build under the \"Checks\" tab to get more details about the error. "
 print_output_errors(meta_err_output, prefix="metadata")
 
-
 # add the consolidated comment to the PR
 if comment!='' and not local:
     pr.create_issue_comment(comment)
+    
+if is_meta_error or len(errors)>0:
+    shutil.rmtree("forecasts")
+    sys.exit("\n ERRORS FOUND EXITING BUILD...")
+
+# add visualization of forecasts
+if not local:
+    for f in forecasts:
+        comment += "Preview of submitted forecast:\n\n"
+        if f.status != "removed":
+            vis_link = "https://jobrac.shinyapps.io/app_check_submission_eu/?file=" + f.raw_url
+            comment += vis_link + "\n"
+    
+    pr.create_issue_comment(comment)
 
 shutil.rmtree("forecasts")
-
-if is_meta_error or len(errors)>0:
-    sys.exit("\n ERRORS FOUND EXITING BUILD...")
