@@ -188,7 +188,7 @@ if not local:
     for f in forecasts:
         comment += "Preview of submitted forecast:\n\n"
         if f.status != "removed":
-            vis_link = "https://jobrac.shinyapps.io/app_check_submission_eu/?file=" + f.raw_url
+            vis_link = "https://epiforecasts.shinyapps.io/ecdc_submission/?file=" + f.raw_url
             comment += vis_link + "\n"
     
     pr.create_issue_comment(comment)
