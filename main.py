@@ -139,7 +139,7 @@ FILEPATH_META = "forecasts/"
 is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
 
 # list contains all changes in the data_processed folder
-data_processed_changes = forecasts + forecasts_err + metadatas + other_files
+data_processed_changes = forecasts + forecasts_err + metadatas
 if data_processed_changes:
     # check if metadata file is present in main repo
     if not metadatas:
