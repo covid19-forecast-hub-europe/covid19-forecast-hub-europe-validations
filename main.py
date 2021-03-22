@@ -183,14 +183,19 @@ if is_meta_error or len(errors)>0:
     shutil.rmtree("forecasts")
     sys.exit("\n ERRORS FOUND EXITING BUILD...")
 
+forecasts_to_vis = False
+
 # add visualization of forecasts
 if not local:
-    for f in forecasts:
+    if forecasts:
         comment += "Preview of submitted forecast:\n\n"
-        if f.status != "removed":
-            vis_link = "https://epiforecasts.shinyapps.io/ecdc_submission/?file=" + f.raw_url
-            comment += vis_link + "\n"
-    
-    pr.create_issue_comment(comment)
-
+        for f in forecasts:
+            if f.status != "removed":
+                forecasts_to_vis = True
+                vis_link = "https://epiforecasts.shinyapps.io/ecdc_submission/?file=" + f.raw_url
+                comment += vis_link + "\n\n"
+        
+        if forecasts_to_vis:
+            pr.create_issue_comment(comment)
+            
 shutil.rmtree("forecasts")
