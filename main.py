@@ -192,7 +192,7 @@ if is_meta_error or len(errors)>0:
 
 forecasts_to_vis = False
 
-if len(warning) > 0:
+if len(warnings) > 0:
     warning_message = ""
     for file in warnings.keys():
         warning_message += str(file) + warning[file] + "\n\n"
