@@ -62,6 +62,7 @@ def covid19_row_validator(column_index_dict, row, codes):
     """
     Does COVID19-specific row validation. Notes:
     - Checks in order:
+    0. value
     1. location
     2. quantiles
     3. forecast_date and target_end_date (terminates if invalid)
@@ -80,6 +81,11 @@ def covid19_row_validator(column_index_dict, row, codes):
     from .cdc_io import _parse_date  # avoid circular imports
 
     error_messages = []  # returned value. filled next
+    
+    # 0. Validate forecast value - Currently not enforced because truth can contain negative values
+    #value = row[column_index_dict['value']]
+    #if float(value) < 0:
+    #    error_messages.append(f"Error > negative value in forecast: {value!r}. row={row}")
 
     # 1. validate location (ISO-2 code)
     location = row[column_index_dict['location']]

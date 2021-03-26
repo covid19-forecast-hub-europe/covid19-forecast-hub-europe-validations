@@ -18,6 +18,7 @@ import shutil
 from codebase.test_formatting import forecast_check
 from codebase.test_formatting import forecast_check, validate_forecast_file, print_output_errors
 from codebase.validation_functions.metadata import check_for_metadata, get_metadata_model, output_duplicate_models
+from codebase.validation_functions.non_negative_forecasts import non_negative_values
 
 # Pattern that matches a forecast file added to the data-processed folder.
 # Test this regex usiing this link: https://regex101.com/r/wmajJA/1
@@ -130,10 +131,16 @@ for f in metadatas:
     
 # Run validations on each of these files
 errors = {}
+warnings = {}
+
 for file in glob.glob("forecasts/*.csv"):
     error_file = forecast_check(file)
+    warning = non_negative_values(file)
     if len(error_file) >0:
         errors[os.path.basename(file)] = error_file
+    
+    if len(warning) > 0:
+        warnings[os.path.basename(file)] = warning[0]
 
 FILEPATH_META = "forecasts/"
 is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
@@ -184,6 +191,13 @@ if is_meta_error or len(errors)>0:
     sys.exit("\n ERRORS FOUND EXITING BUILD...")
 
 forecasts_to_vis = False
+
+if len(warning) > 0:
+    warning_message = ""
+    for file in warnings.keys():
+        warning_message += str(file) + warning[file] + "\n\n"
+    pr.create_issue_comment(comment)
+
 
 # add visualization of forecasts
 if not local:
