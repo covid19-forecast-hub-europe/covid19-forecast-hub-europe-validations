@@ -195,7 +195,7 @@ forecasts_to_vis = False
 if len(warnings) > 0:
     warning_message = ""
     for file in warnings.keys():
-        warning_message += str(file) + warning[file] + "\n\n"
+        warning_message += str(file) + warnings[file] + "\n\n"
     pr.create_issue_comment(comment)
 
 
