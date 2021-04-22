@@ -30,7 +30,7 @@ local = os.environ.get('CI') != 'true'
 # local = True
 if local:
     token = None
-    print("Running on LOCAL mode!!")
+    print("Running on LOCAL mode. Checking files in forecasts/")
 else:
     print("Added token")
     token  = os.environ.get('GH_TOKEN')
@@ -47,24 +47,21 @@ if repo_name is None:
     repo_name = 'epiforecasts/covid19-forecast-hub-europe'
 repo = g.get_repo(repo_name)
 
-print(f"Github repository: {repo_name}")
-print(f"Github event name: {os.environ.get('GITHUB_EVENT_NAME')}")
-
 if not local:
+    print(f"Github repository: {repo_name}")
+    print(f"Github event name: {os.environ.get('GITHUB_EVENT_NAME')}")
     event = json.load(open(os.environ.get('GITHUB_EVENT_PATH')))
-else:
-    event = json.load(open("local/test_event.json"))
-    
+
 pr = None
 comment = ''
 files_changed = []
 
-if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
+if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
     # Fetch the  PR number from the event json
     pr_num = event['pull_request']['number']
     print(f"PR number: {pr_num}")
 
-    # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html 
+    # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html
     # pr is the Pullrequest object
     pr = repo.get_pull(pr_num)
 
@@ -77,13 +74,13 @@ metadatas = [file for file in files_changed if pat_meta.match(file.filename) is 
 other_files = [file for file in files_changed if (pat.match(file.filename) is None and pat_meta.match(file.filename) is None)]
 
 if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
-    # IF there are other fiels changed in the PR 
-    #TODO: If there are other files changed as well as forecast files added, then add a comment saying so. 
+    # IF there are other fields changed in the PR
+    #TODO: If there are other files changed as well as forecast files added, then add a comment saying so.
     if len(other_files) > 0 and len(forecasts) >0:
         print(f"PR has other files changed too.")
         if pr is not None:
             pr.add_to_labels('other-files-updated')
-    
+
     if len(metadatas) > 0:
         print(f"PR has metata files changed.")
         if pr is not None:
@@ -92,17 +89,17 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
     if len(forecasts) > 0:
         if pr is not None:
             pr.add_to_labels('data-submission')
-        
+
     deleted_forecasts = False
     changed_forecasts = False
-    
-    # `f` is ab object of type: https://pygithub.readthedocs.io/en/latest/github_objects/File.html 
+
+    # `f` is an object of type: https://pygithub.readthedocs.io/en/latest/github_objects/File.html
     # `forecasts` is a list of `File`s that are changed in the PR.
     for f in forecasts:
         # check if file is remove
         if f.status == "removed":
             deleted_forecasts = True
-        
+
         # if file status is not "added" it is probably "renamed" or "changed"
         elif f.status != "added":
             changed_forecasts = True
@@ -110,39 +107,39 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
     if deleted_forecasts:
         pr.add_to_labels('forecast-deleted')
         comment += "\n Your submission seem to have deleted some forecasts. Could you provide a reason for the deletion? Thank you!\n\n"
-        
+
     if changed_forecasts:
         pr.add_to_labels('forecast-updated')
         comment += "\n Your submission seem to have updated/renamed some forecasts. Could you provide a reason? Thank you!\n\n"
-    
+
 # Download all forecasts
 # create a forecasts directory
-os.makedirs('forecasts', exist_ok=True)
+# os.makedirs('forecasts', exist_ok=True)
 
 # Download all forecasts changed in the PR into the forecasts folder
 for f in forecasts:
     if f.status != "removed":
-        urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
+        urllib.request.urlretrieve(f.raw_url, f"./forecasts/{f.filename.split('/')[-1]}")
 
 # Download all metadat files changed in the PR into the forecasts folder
 for f in metadatas:
     if f.status != "removed":
-        urllib.request.urlretrieve(f.raw_url, f"forecasts/{f.filename.split('/')[-1]}")
-    
+        urllib.request.urlretrieve(f.raw_url, f"./forecasts/{f.filename.split('/')[-1]}")
+
 # Run validations on each of these files
 errors = {}
 warnings = {}
 
-for file in glob.glob("forecasts/*.csv"):
+for file in glob.glob("./forecasts/*.csv"):
     error_file = forecast_check(file)
     warning = non_negative_values(file)
     if len(error_file) >0:
         errors[os.path.basename(file)] = error_file
-    
+
     if len(warning) > 0:
         warnings[os.path.basename(file)] = warning[0]
 
-FILEPATH_META = "forecasts/"
+FILEPATH_META = "./forecasts/"
 is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
 
 # list contains all changes in the data_processed folder
@@ -150,18 +147,18 @@ data_processed_changes = forecasts + forecasts_err + metadatas
 if data_processed_changes:
     # check if metadata file is present in main repo
     if not metadatas:
-        
+
         # get all team_model-names in commit (usually only one)
         team_names = []
         for file in data_processed_changes:
             team_names.append(file.contents_url.split("/")[-2])
         team_names = set(team_names)
-        
+
         # if the PR doesnt add a metadatafile we have to check if there is a existing file in the main repo
         for name in team_names:
             try:
                 repo.get_contents("data-processed/{}/metadata-{}.txt".format(name, name))
-            
+
             # metadata file doesnt exist and is not added in the PR
             except github.UnknownObjectException:
                 is_meta_error = True
@@ -183,11 +180,11 @@ if is_meta_error:
 print_output_errors(meta_err_output, prefix="metadata")
 
 # add the consolidated comment to the PR
-if comment!='' and not local:
+if comment!='' and not 'local':
     pr.create_issue_comment(comment)
-    
+
 if is_meta_error or len(errors)>0:
-    shutil.rmtree("forecasts")
+    shutil.rmtree("./forecasts")
     sys.exit("\n ERRORS FOUND EXITING BUILD...")
 
 forecasts_to_vis = False
@@ -208,8 +205,11 @@ if not local:
                 forecasts_to_vis = True
                 vis_link = "https://epiforecasts.shinyapps.io/ecdc_submission/?file=" + f.raw_url
                 comment += vis_link + "\n\n"
-        
+
         if forecasts_to_vis:
             pr.create_issue_comment(comment)
-            
-shutil.rmtree("forecasts")
+
+# delete checked files from validation
+files = glob.glob("./forecasts/*.*")
+for file in files:
+    os.remove(file)
