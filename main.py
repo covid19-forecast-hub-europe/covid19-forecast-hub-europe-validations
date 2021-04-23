@@ -68,6 +68,20 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
     # fetch all files changed in this PR and add it to the files_changed list.
     files_changed +=[f for f in pr.get_files()]
 
+# if the file is run in local mode and no files are present in the /forecasts folder
+elif local and not glob.glob("./forecasts/*.csv"):
+    # get user input
+    pr_num = input("Please enter PR reference number:")
+    print(f"PR number: {pr_num}")
+
+    # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html
+    # pr is the Pullrequest object
+    pr = repo.get_pull(int(pr_num))
+
+    # fetch all files changed in this PR and add it to the files_changed list.
+    files_changed +=[f for f in pr.get_files()]
+    
+
 forecasts = [file for file in files_changed if pat.match(file.filename) is not None]
 forecasts_err = [file for file in files_changed if pat_other.match(file.filename) is not None]
 metadatas = [file for file in files_changed if pat_meta.match(file.filename) is not None]
@@ -194,7 +208,6 @@ if len(warnings) > 0:
     for file in warnings.keys():
         warning_message += str(file) + " " + warnings[file] + "\n\n"
     pr.create_issue_comment(warning_message)
-
 
 # add visualization of forecasts
 if not local:
