@@ -80,7 +80,6 @@ elif local and not glob.glob("./forecasts/*.csv"):
 
     # fetch all files changed in this PR and add it to the files_changed list.
     files_changed +=[f for f in pr.get_files()]
-    
 
 forecasts = [file for file in files_changed if pat.match(file.filename) is not None]
 forecasts_err = [file for file in files_changed if pat_other.match(file.filename) is not None]
