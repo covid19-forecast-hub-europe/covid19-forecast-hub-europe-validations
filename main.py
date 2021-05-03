@@ -114,7 +114,7 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
 
 # Download all forecasts
 # create a forecasts directory
-# os.makedirs('forecasts', exist_ok=True)
+os.makedirs('forecasts', exist_ok=True)
 
 # Download all forecasts changed in the PR into the forecasts folder
 for f in forecasts:
