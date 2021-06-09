@@ -19,6 +19,7 @@ from codebase.test_formatting import forecast_check
 from codebase.test_formatting import forecast_check, validate_forecast_file, print_output_errors
 from codebase.validation_functions.metadata import check_for_metadata, get_metadata_model, output_duplicate_models
 from codebase.validation_functions.non_negative_forecasts import non_negative_values
+from codebase.validation_functions.integer_forecasts import integer_values
 
 # Pattern that matches a forecast file added to the data-processed folder.
 # Test this regex usiing this link: https://regex101.com/r/wmajJA/1
@@ -95,7 +96,7 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
             pr.add_to_labels('other-files-updated')
 
     if len(metadatas) > 0:
-        print(f"PR has metata files changed.")
+        print(f"PR has metadata files changed.")
         if pr is not None:
             pr.add_to_labels('metadata-change')
 
@@ -146,6 +147,7 @@ warnings = {}
 for file in glob.glob("./forecasts/*.csv"):
     error_file = forecast_check(file)
     warning = non_negative_values(file)
+    warning = integer_values(file, warning)
     if len(error_file) >0:
         errors[os.path.basename(file)] = error_file
 
