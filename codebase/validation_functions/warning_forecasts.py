@@ -7,7 +7,7 @@ Created on Fri Mar 26 15:18:25 2021
 
 import pandas as pd
 
-def non_negative_values(file):
+def warning_values(file):
     """
     Parameters
     ----------
@@ -22,10 +22,13 @@ def non_negative_values(file):
     result = []
     
     df = pd.read_csv(file)
+    
     negative = df["value"]<0
-    
-    
     if negative.any():
         result.append(f"Warning > negative value in forecast")
+    
+    non_integer = df["value"] != type(int)
+    if non_integer.any():
+         result.append(f"Warning > non-integer value in forecast")
             
     return result

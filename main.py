@@ -18,8 +18,7 @@ import shutil
 from codebase.test_formatting import forecast_check
 from codebase.test_formatting import forecast_check, validate_forecast_file, print_output_errors
 from codebase.validation_functions.metadata import check_for_metadata, get_metadata_model, output_duplicate_models
-from codebase.validation_functions.non_negative_forecasts import non_negative_values
-from codebase.validation_functions.integer_forecasts import integer_values
+from codebase.validation_functions.warning_forecasts import warning_values
 
 # Pattern that matches a forecast file added to the data-processed folder.
 # Test this regex usiing this link: https://regex101.com/r/wmajJA/1
@@ -146,11 +145,10 @@ warnings = {}
 
 for file in glob.glob("./forecasts/*.csv"):
     error_file = forecast_check(file)
-    warning = non_negative_values(file)
-    warning = integer_values(file, warning)
     if len(error_file) >0:
         errors[os.path.basename(file)] = error_file
-
+    
+    warning = warning_values(file)
     if len(warning) > 0:
         warnings[os.path.basename(file)] = warning[0]
 
