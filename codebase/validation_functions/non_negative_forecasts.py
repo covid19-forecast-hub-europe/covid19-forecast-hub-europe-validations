@@ -33,6 +33,6 @@ def non_negative_values(file):
     if non_integer.any():
          result.append(f"Warning > non-integer value in forecast")
 
-    result = ''.join(result)
+    result = '/n'.join(result)
     
     return result
