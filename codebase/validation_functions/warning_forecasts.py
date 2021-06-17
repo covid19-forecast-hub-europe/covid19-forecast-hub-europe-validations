@@ -30,5 +30,7 @@ def warning_values(file):
     non_integer = df["value"] != type(int)
     if non_integer.any():
          result.append(f"Warning > non-integer value in forecast")
+         
+    result = '\n'.join(result)
             
     return result
