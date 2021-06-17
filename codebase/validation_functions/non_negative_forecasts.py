@@ -27,5 +27,12 @@ def non_negative_values(file):
     
     if negative.any():
         result.append(f"Warning > negative value in forecast")
+        
+    non_integer = df["value"] != type(int)
+    
+    if non_integer.any():
+         result.append(f"Warning > non-integer value in forecast")
+
+    result = '\n'.join(result)
             
     return result
