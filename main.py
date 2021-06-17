@@ -150,7 +150,7 @@ for file in glob.glob("./forecasts/*.csv"):
     
     warning = warning_values(file)
     if len(warning) > 0:
-        warnings[os.path.basename(file)] = warning[0]
+        warnings[os.path.basename(file)] = warning
 
 FILEPATH_META = "./forecasts/"
 is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
@@ -202,11 +202,11 @@ if is_meta_error or len(errors)>0:
 
 forecasts_to_vis = False
 
-if len(warnings) > 0:
-    warning_message = ""
-    for file in warnings.keys():
-        warning_message += str(file) + " " + warnings[file] + "\n\n"
-    pr.create_issue_comment(warning_message)
+if len(warnings) > 0 and not 'local':
+    # warning_message = ""
+    # for file in warnings.keys():
+    #    warning_message += str(file) + " " + warnings[file] + "\n\n"
+    pr.create_issue_comment(warnings)
 
 # add visualization of forecasts
 if not local:

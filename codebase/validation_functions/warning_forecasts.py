@@ -31,6 +31,6 @@ def warning_values(file):
     if non_integer.any():
          result.append(f"Warning > non-integer value in forecast")
          
-    result = '\n'.join(result)
+    # result = '\n'.join(result)
             
     return result
