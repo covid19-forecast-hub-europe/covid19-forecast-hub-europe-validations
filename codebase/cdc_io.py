@@ -1,10 +1,12 @@
+# Standard modules
 import csv
 import datetime
 from itertools import groupby
 
+# To list in requirements.txt
 import pymmwr
 
-#
+# Local modules
 # date formats
 #
 from .quantile_io import POINT_PREDICTION_CLASS, BIN_DISTRIBUTION_CLASS
