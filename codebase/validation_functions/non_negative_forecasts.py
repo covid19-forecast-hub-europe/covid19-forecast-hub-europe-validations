@@ -28,7 +28,7 @@ def non_negative_values(file):
     if negative.any():
         result.append(f": negative value in forecast")
             
-    non_integer = df["value"] != type(int)
+    non_integer = df["value"] != round(df["value"])
     
     if non_integer.any():
         result.append(f" : non-integer value in forecast")
