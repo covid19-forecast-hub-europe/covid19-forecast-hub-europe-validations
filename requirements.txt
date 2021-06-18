@@ -2,6 +2,7 @@ click           # covid19.py
 numpy           # test_formatting.py
 pandas          # test_formatting.py, non_negative_forecasts.py, metadata.py, forecast_date.py
 pygithub        # main.py, test_formatting.py
+pykwalify       # metadata.py
 pymmwr          # cdc_io.py
 pyprojroot      # test_formatting.py
 python-dateutil # metadata.py
