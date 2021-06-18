@@ -1,8 +1,11 @@
-import dateutil
+# Standard modules
 import os
 import glob
-from dateutil.parser import parse
 import re
+
+# To list in requirements.txt
+import dateutil
+from dateutil.parser import parse
 import yaml
 import pandas as pd
 

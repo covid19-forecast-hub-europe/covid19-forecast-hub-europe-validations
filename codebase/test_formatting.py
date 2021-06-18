@@ -1,18 +1,22 @@
-from .covid19 import validate_quantile_csv_file
+# Standard modules
 import glob
 from pprint import pprint
 import sys
 import os
+import collections
+from datetime import datetime
+from itertools import chain
+from pathlib import Path
+
+# To list in requirements.txt
 import pandas as pd
 import numpy as np
-from datetime import datetime
 import yaml
-from itertools import chain
-import collections
 from github import Github
-from pathlib import Path
 from pyprojroot import here
 
+# Local modules
+from .covid19 import validate_quantile_csv_file
 from .validation_functions.metadata import check_for_metadata, get_metadata_model, output_duplicate_models
 from .validation_functions.forecast_filename import validate_forecast_file_name
 from .validation_functions.forecast_date import filename_match_forecast_date

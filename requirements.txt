@@ -1,14 +1,9 @@
-pymmwr
-pyyaml
-click
-pandas
-requests
-gitpython
-pygsheets
-unidecode
-epiweeks
-selenium
-webdriver_manager
-pyprojroot
-pygithub
-https://github.com/hannanabdul55/pykwalify/archive/master.zip
+click           # covid19.py
+numpy           # test_formatting.py
+pandas          # test_formatting.py, non_negative_forecasts.py, metadata.py, forecast_date.py
+pygithub        # main.py, test_formatting.py
+pymmwr          # cdc_io.py
+pyprojroot      # test_formatting.py
+python-dateutil # metadata.py
+pyyaml          # test_formatting.py, metadata.py
+

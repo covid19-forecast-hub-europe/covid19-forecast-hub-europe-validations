@@ -1,8 +1,13 @@
+# Standard modules
 import datetime
+from pathlib import Path
+
+# To list in requirements.txt
 import click
 import pandas as pd
-from pathlib import Path
 from pyprojroot import here
+
+# Local modules
 from .quantile_io import json_io_dict_from_quantile_csv_file
 
 #

@@ -5,16 +5,20 @@ Created on Sat Mar  6 19:04:35 2021
 @author: Jannik
 """
 
+# Standard modules
 import re
 import os
 import json
 import glob
-from github import Github
-import github
 import urllib.request
 import sys
 import shutil
 
+# To list in requirements.txt
+from github import Github
+import github
+
+# Local modules
 from codebase.test_formatting import forecast_check
 from codebase.test_formatting import forecast_check, validate_forecast_file, print_output_errors
 from codebase.validation_functions.metadata import check_for_metadata, get_metadata_model, output_duplicate_models
