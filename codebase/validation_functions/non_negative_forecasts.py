@@ -22,7 +22,7 @@ def non_negative_values(file):
     result = []
     
     df = pd.read_csv(file)
-    negative = df["value"]>0
+    negative = df["value"]<0
     
     
     if negative.any():
