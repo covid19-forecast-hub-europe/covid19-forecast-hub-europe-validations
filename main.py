@@ -190,7 +190,7 @@ if is_meta_error:
 print_output_errors(meta_err_output, prefix="metadata")
 
 # add the consolidated comment to the PR
-if comment!='' and not local:
+if comment!='' and not (local or remote):
     pr.create_issue_comment(comment)
     
 if is_meta_error or len(errors)>0:
@@ -199,11 +199,13 @@ if is_meta_error or len(errors)>0:
 
 forecasts_to_vis = False
 
-if len(warnings) > 0 and not (local or remote):
+if len(warnings) > 0:
     warning_message = ""
     for file in warnings.keys():
         warning_message += str(file) + " " + warnings[file] + "\n\n"
-    pr.create_issue_comment(warning_message)
+    if not (local or remote) :
+        pr.create_issue_comment(warning_message)
+    print(warning_message)
 
 
 # add visualization of forecasts
