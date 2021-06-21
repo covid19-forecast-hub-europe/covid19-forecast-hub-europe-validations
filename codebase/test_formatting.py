@@ -122,7 +122,7 @@ def update_checked_files(df, previous_checked, files_in_repository):
     df.to_csv('code/validation/locally_validated_files.csv', index=False)
 
 
-def print_output_errors(output_errors, prefix=""):
+def print_output_errors(output_errors, output_warnings, prefix=""):
     """
     purpose: Print the final errors
 
@@ -136,6 +136,12 @@ def print_output_errors(output_errors, prefix=""):
             for error in errors:
                 print(error)
         print("\n✗ %s error found in %d file%s. Error details are above." % (prefix, len(output_errors) ,("s" if len(output_errors)>1 else "")))
+    elif len(output_warnings) > 0:
+        for filename, errors in output_errors.items():
+            print("\n* WARNING IN ", filename)
+            for error in errors:
+                print(error)
+        print("\n✗ %s warning found in %d file%s. Warning details are above." % (prefix, len(output_warnings) ,("s" if len(output_warnings)>1 else "")))
     else:
         print("\n✓ no %s errors"% (prefix))
 

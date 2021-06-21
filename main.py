@@ -183,11 +183,11 @@ for file in other_files:
 
 if len(errors) > 0:
     comment+="\n\n Your submission has some validation errors. Please check the logs of the build under the \"Checks\" tab to get more details about the error. "
-print_output_errors(errors, prefix='data')
+print_output_errors(errors, warnings, prefix='data')
 
 if is_meta_error:
     comment+="\n\n Your submission has some metadata validation errors. Please check the logs of the build under the \"Checks\" tab to get more details about the error. "
-print_output_errors(meta_err_output, prefix="metadata")
+print_output_errors(meta_err_output, [], prefix="metadata")
 
 # add the consolidated comment to the PR
 if comment!='' and not (local or remote):
