@@ -42,18 +42,25 @@ else:
     g = Github(token)
 
 # mount repository
-repo_name = os.environ.get('GITHUB_REPOSITORY')
-if repo_name is None:
-    repo_name = 'epiforecasts/covid19-forecast-hub-europe'
-repo = g.get_repo(repo_name)
+hub_repo = os.environ.get('HUB_REPO')
+if hub_repo is None:
+    hub_repo = 'epiforecasts/covid19-forecast-hub-europe'
+repo = g.get_repo(hub_repo)
 
-print(f"Github repository: {repo_name}")
+
+# 'remote' mode: we're running the tests from a repo that is not the hub repo
+remote = os.environ.get("GITHUB_REPOSITORY") != hub_repo
+
+if remote:
+    print("Running on REMOTE mode!!")
+
+print(f"Github repository: {hub_repo}")
 print(f"Github event name: {os.environ.get('GITHUB_EVENT_NAME')}")
 
-if not local:
-    event = json.load(open(os.environ.get('GITHUB_EVENT_PATH')))
-else:
+if local or remote:
     event = json.load(open("local/test_event.json"))
+else:
+    event = json.load(open(os.environ.get('GITHUB_EVENT_PATH')))
     
 pr = None
 comment = ''
@@ -76,7 +83,7 @@ forecasts_err = [file for file in files_changed if pat_other.match(file.filename
 metadatas = [file for file in files_changed if pat_meta.match(file.filename) is not None and file.status != "removed"]
 other_files = [file for file in files_changed if (pat.match(file.filename) is None and pat_meta.match(file.filename) is None)]
 
-if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
+if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' and not remote:
     # IF there are other fiels changed in the PR 
     #TODO: If there are other files changed as well as forecast files added, then add a comment saying so. 
     if len(other_files) > 0 and len(forecasts) >0:
@@ -192,7 +199,7 @@ if is_meta_error or len(errors)>0:
 
 forecasts_to_vis = False
 
-if len(warnings) > 0:
+if len(warnings) > 0 and not (local or remote):
     warning_message = ""
     for file in warnings.keys():
         warning_message += str(file) + " " + warnings[file] + "\n\n"
@@ -200,7 +207,7 @@ if len(warnings) > 0:
 
 
 # add visualization of forecasts
-if not local:
+if not (local or remote):
     if forecasts:
         comment += "Preview of submitted forecast:\n\n"
         for f in forecasts:
