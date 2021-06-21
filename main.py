@@ -49,7 +49,7 @@ repo = g.get_repo(hub_repo)
 
 
 # 'remote' mode: we're running the tests from a repo that is not the hub repo
-remote = os.environ.get("GITHUB_REPOSITORY") != hub_repo
+remote = os.environ.get("GITHUB_REPOSITORY") != hub_repo and not local
 
 if remote:
     print("Running on REMOTE mode!!")
