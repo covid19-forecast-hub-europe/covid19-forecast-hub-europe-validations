@@ -66,7 +66,7 @@ pr = None
 comment = ''
 files_changed = []
 
-if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
+if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local or remote:
     # Fetch the  PR number from the event json
     pr_num = event['pull_request']['number']
     print(f"PR number: {pr_num}")
