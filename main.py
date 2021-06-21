@@ -203,9 +203,11 @@ if len(warnings) > 0:
     warning_message = ""
     for file in warnings.keys():
         warning_message += str(file) + " " + warnings[file] + "\n\n"
-    if not (local or remote) :
-        pr.create_issue_comment(warning_message)
     print(warning_message)
+    if not (local or remote):
+        pr.create_issue_comment(warning_message)
+    else:
+        sys.exit("\n WARNINGS FOUND. EXITING BUILD...")
 
 
 # add visualization of forecasts
