@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with: covid19-forecast-hub-europe
+        with: "covid19-forecast-hub-europe"
 
       - name: Pull & update submodules recursively
         run: |
