@@ -1,11 +1,6 @@
 {
 "pull_request": {
-    "url": "https://api.github.com/repos/Codertocat/Hello-World/pulls/2",
-    "id": 279147437,
-    "node_id": "MDExOlB1bGxSZXF1ZXN0Mjc5MTQ3NDM3",
-    "html_url": "https://github.com/Codertocat/Hello-World/pull/2",
-    "diff_url": "https://github.com/Codertocat/Hello-World/pull/2.diff",
-    "patch_url": "https://github.com/Codertocat/Hello-World/pull/2.patch",
-    "issue_url": "https://api.github.com/repos/Codertocat/Hello-World/issues/2",
-    "number": 147}
+    "url": "https://github.com/epiforecasts/covid19-forecast-hub-europe/pull/536/",
+    "number": 536,
+    "title": "Temporary PR for testing validation"}
 }
