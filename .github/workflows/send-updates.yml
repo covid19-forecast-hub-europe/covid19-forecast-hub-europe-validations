@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with: 
-          repository: 'covid19-forecast-hub-europe'
+          repository: 'epiforecasts/covid19-forecast-hub-europe'
 
       - name: Pull & update submodules recursively
         run: |
