@@ -148,7 +148,8 @@ for file in glob.glob("./forecasts/*.csv"):
     if len(warning) > 0:
         warnings[os.path.basename(file)] = warning[0]
 
-is_meta_error = False
+is_meta_error = []
+meta_err_output = []
 for file in glob.glob("./forecasts/*.txt"):
     is_meta_error, meta_err_output = check_for_metadata(filepath=file)
 
