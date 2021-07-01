@@ -148,8 +148,8 @@ for file in glob.glob("./forecasts/*.csv"):
     if len(warning) > 0:
         warnings[os.path.basename(file)] = warning[0]
 
-FILEPATH_META = "./forecasts/"
-is_meta_error, meta_err_output = check_for_metadata(filepath=FILEPATH_META)
+for file in glob.glob("./forecasts/*.txt"):
+    is_meta_error, meta_err_output = check_for_metadata(filepath=file)
 
 # list contains all changes in the data_processed folder
 data_processed_changes = forecasts + forecasts_err + metadatas
