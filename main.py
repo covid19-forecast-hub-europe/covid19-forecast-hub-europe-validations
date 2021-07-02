@@ -69,7 +69,7 @@ if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
     # fetch all files changed in this PR and add it to the files_changed list.
     files_changed +=[f for f in pr.get_files()]
 
-# if the file is run in local mode, 
+# if the file is run in local mode,
 # and no files are present in the /forecasts folder, ask for a PR number
 elif local and not glob.glob("./forecasts/*.csv"):
     # get user input
@@ -146,7 +146,7 @@ for file in glob.glob("./forecasts/*.csv"):
         errors[os.path.basename(file)] = error_file
 
     if len(warning) > 0:
-        warnings[os.path.basename(file)] = warning[0]
+        warnings[os.path.basename(file)] = warning
 
 is_meta_error = []
 meta_err_output = []
