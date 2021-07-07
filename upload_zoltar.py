@@ -12,10 +12,10 @@ import yaml
 import hashlib
 import json
 
-sys.path.append('validation/codebase/')
+sys.path.append('validation/')
 
-from quantile_io import json_io_dict_from_quantile_csv_file, REQUIRED_COLUMNS
-from covid19 import VALID_TARGET_NAMES, codes, covid19_row_validator, validate_quantile_csv_file
+from codebase.quantile_io import json_io_dict_from_quantile_csv_file, REQUIRED_COLUMNS
+from codebase.covid19 import VALID_TARGET_NAMES, codes, covid19_row_validator, validate_quantile_csv_file
 
 cwd_p = Path(__file__).parent.resolve()
 all_forecasts = glob.glob('./data-processed/**/*-*.csv')
@@ -39,7 +39,7 @@ repo_forecasts = []
 
 def read_validation_db():
     try:
-        with open('./code/zoltar_scripts/validated_file_db.json', 'rb') as f:
+        with open('validation/zoltar_scripts/validated_file_db.json', 'rb') as f:
             l = json.load(f)
     except Exception as ex:
         l = {}
@@ -47,7 +47,7 @@ def read_validation_db():
 
 
 def write_db(db):
-    with open('./code/zoltar_scripts/validated_file_db.json', 'w') as fw:
+    with open('validation/zoltar_scripts/validated_file_db.json', 'w') as fw:
         json.dump(db, fw, indent=4)
 
 # Function to read metadata file to get model name
@@ -65,27 +65,17 @@ def get_forecast_info(name):
 
 def config_from_metadata(metadata):
     model_config = {}
-    model_config['name'], \
-    model_config['abbreviation'], \
-    model_config['team_name'], \
-    model_config['description'], \
-    # model_config['methods'], \
-    model_config['license'], \
-    model_config['contributors'], \
-    model_config['citation'], \
-    model_config['notes'], \
-    model_config['home_url'], \
-    model_config['aux_data_url'] \
-        = metadata['model_name'], \
-    metadata['model_abbr'], \
-    metadata['team_name'], \
-    metadata['methods'], \
-        # model_config['methods_long'], \
-    model_config['license'], \
-    model_config['model_contributors'], \
-    model_config['citation'], \
-    model_config['team_model_designation'], \
-    metadata['website_url'] if metadata.get('website_url') != None else url + dir_name, 'NA'
+    model_config['name'] = metadata['model_name']
+    model_config['abbreviation'] = metadata['model_abbr']
+    model_config['team_name'] = metadata['team_name']
+    model_config['description'] = metadata['methods']
+    model_config['methods'] = metadata['methods_long'] if metadata.get('methods_long') != None else 'NA'
+    model_config['license'] = metadata['license']
+    model_config['contributors'] = metadata['model_contributors']
+    model_config['citation'] = metadata['citation'] if metadata.get('citation') != None else 'NA'
+    model_config['notes'] = metadata['team_model_designation']
+    model_config['home_url'] = metadata['website_url'] if metadata.get('website_url') != None else url + dir_name
+    model_config['aux_data_url'] = 'NA'
     return model_config
 
 

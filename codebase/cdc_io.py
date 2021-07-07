@@ -5,11 +5,12 @@ from itertools import groupby
 
 # To list in requirements.txt
 import pymmwr
-
+import sys 
 # Local modules
 # date formats
 #
-from .quantile_io import POINT_PREDICTION_CLASS, BIN_DISTRIBUTION_CLASS
+sys.path.append('validation/codebase/')
+from quantile_io import POINT_PREDICTION_CLASS, BIN_DISTRIBUTION_CLASS
 
 
 YYYY_MM_DD_DATE_FORMAT = '%Y-%m-%d'  # e.g., '2017-01-17'

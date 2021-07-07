@@ -2,16 +2,16 @@ from __future__ import absolute_import
 # Standard modules
 import datetime
 from pathlib import Path
-import sys
 
 # To list in requirements.txt
 import click
 import pandas as pd
 from pyprojroot import here
 
+import sys
 # Local modules
 sys.path.append('validation/codebase/')
-from quantile_io import json_io_dict_from_quantile_csv_file
+from .quantile_io import json_io_dict_from_quantile_csv_file
 
 #
 # functions specific to the COVID19 project
