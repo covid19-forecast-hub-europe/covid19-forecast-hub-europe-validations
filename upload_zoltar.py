@@ -12,6 +12,10 @@ import yaml
 import hashlib
 import json
 
+if (os.environ.get('Z_USERNAME') == None):
+    print("Run within hub submodule, and/or set Zoltar access as environment variables.")
+    raise SystemExit
+
 sys.path.append('validation/')
 
 from codebase.quantile_io import json_io_dict_from_quantile_csv_file, REQUIRED_COLUMNS
