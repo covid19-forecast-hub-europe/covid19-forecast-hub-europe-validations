@@ -5,7 +5,8 @@ from collections import defaultdict
 import datetime
 from itertools import groupby
 
-
+import sys
+sys.path.append('validation/codebase/')
 #
 # project-independent variables
 #
@@ -152,7 +153,7 @@ def _validated_rows_for_quantile_csv(csv_fp, valid_target_names, fips_codes,  ro
 
     :return: 2-tuple: (validated_rows, error_messages)
     """
-    from .cdc_io import CDC_POINT_ROW_TYPE, CDC_OBSERVED_ROW_TYPE, CDC_QUANTILE_ROW_TYPE, _parse_value  # avoid circular imports
+    from cdc_io import CDC_POINT_ROW_TYPE, CDC_OBSERVED_ROW_TYPE, CDC_QUANTILE_ROW_TYPE, _parse_value  # avoid circular imports
 
 
     error_messages = []  # list of strings. return value. set below if any issues

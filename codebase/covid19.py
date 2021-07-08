@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Standard modules
 import datetime
 from pathlib import Path
@@ -7,7 +8,9 @@ import click
 import pandas as pd
 from pyprojroot import here
 
+import sys
 # Local modules
+sys.path.append('validation/codebase/')
 from .quantile_io import json_io_dict_from_quantile_csv_file
 
 #
@@ -86,7 +89,7 @@ def covid19_row_validator(column_index_dict, row, codes):
     from .cdc_io import _parse_date  # avoid circular imports
 
     error_messages = []  # returned value. filled next
-    
+
     # 0. Validate forecast value - Currently not enforced because truth can contain negative values
     #value = row[column_index_dict['value']]
     #if float(value) < 0:
@@ -114,7 +117,7 @@ def covid19_row_validator(column_index_dict, row, codes):
     # 3. validate forecast_date and target_end_date
     forecast_date = row[column_index_dict['forecast_date']]
     target_end_date = row[column_index_dict['target_end_date']]
-    
+
     # 3.1 Expect date formats
     forecast_date = _parse_date(forecast_date)  # None if invalid format
     target_end_date = _parse_date(target_end_date)  # ""
@@ -128,7 +131,7 @@ def covid19_row_validator(column_index_dict, row, codes):
     if date_diff < datetime.timedelta(days=5):
         error_messages.append(f"Error > target_end_date was <5 days after forecast_date: {target_end_date}. row={row}")
         return error_messages  # terminate - depends on valid target_end_date
-    
+
     # 4. validate "__ week ahead" increment - must be an int
     target = row[column_index_dict['target']]
     try:
@@ -145,7 +148,7 @@ def covid19_row_validator(column_index_dict, row, codes):
        error_messages.append(f"Error > target_end_date was not a Saturday: {target_end_date}. row={row}")
        return error_messages  # terminate - depends on valid target_end_date
 
-    # 5.2 Forecast date should always be Mon -- no longer checked   
+    # 5.2 Forecast date should always be Mon -- no longer checked
 
     # 5.3 For x week ahead targets, ensure x-week ahead forecast is for Sat
     #   - set exp_target_end_date - remove 1 wk (1 wk ahead is actually 0 wk ahead), then validate it

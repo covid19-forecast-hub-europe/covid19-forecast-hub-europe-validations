@@ -7,4 +7,8 @@ pymmwr          # cdc_io.py
 pyprojroot      # test_formatting.py
 python-dateutil # metadata.py
 pyyaml          # test_formatting.py, metadata.py
+# Zoltar
+zoltpy
+pathlib
+pprint
 
