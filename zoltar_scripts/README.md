@@ -35,3 +35,7 @@ create and save a json file of modified forecasts and upload to zoltar via web i
 ```
 code/zoltar_scripts/create_validated_files_db.py
 ```
+
+- Note that the following files are databases of the file change history, and shouldn't be deleted:
+  - `validated_file_db.json`
+  - `validated_file_db.p`
