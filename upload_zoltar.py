@@ -18,8 +18,9 @@ if (os.environ.get('Z_USERNAME') == None):
 
 sys.path.append('validation/')
 
-from codebase.quantile_io import json_io_dict_from_quantile_csv_file, REQUIRED_COLUMNS
-from codebase.covid19 import VALID_TARGET_NAMES, codes, covid19_row_validator, validate_quantile_csv_file
+from codebase.quantile_io import json_io_dict_from_quantile_csv_file
+from codebase.covid19 import VALID_TARGET_NAMES, covid19_row_validator, validate_quantile_csv_file
+from codebase.project_variables import REQUIRED_COLUMNS, CODES
 
 cwd_p = Path(__file__).parent.resolve()
 all_forecasts = glob.glob('./data-processed/**/*-*.csv')
@@ -126,7 +127,7 @@ def upload_forecast(forecast_name):
             fp.seek(0)
             quantile_json, error_from_transformation = json_io_dict_from_quantile_csv_file(fp,
             VALID_TARGET_NAMES,
-            codes,
+            CODES,
             covid19_row_validator,
             REQUIRED_COLUMNS)
 

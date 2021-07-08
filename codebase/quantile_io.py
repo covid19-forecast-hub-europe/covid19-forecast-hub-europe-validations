@@ -5,25 +5,14 @@ from collections import defaultdict
 import datetime
 from itertools import groupby
 
+# useful when loading inside hub submodule (no impact otherwise)
 import sys
-sys.path.append('validation/codebase/')
+sys.path.append('validation/')
+sys.path.append('validation/codebase')
 #
 # project-independent variables
 #
-
-# prediction classes for use in "JSON IO dict" conversion
-BIN_DISTRIBUTION_CLASS = 'bin'
-NAMED_DISTRIBUTION_CLASS = 'named'
-POINT_PREDICTION_CLASS = 'point'
-SAMPLE_PREDICTION_CLASS = 'sample'
-QUANTILE_PREDICTION_CLASS = 'quantile'
-OBS_PREDICTION_CLASS = "obs"
-
-# quantile csv I/O
-
-REQUIRED_COLUMNS = ('location', 'target', 'type', 'quantile', 'value')
-POSSIBLE_COLUMNS = ['location', 'target', 'type', 'quantile', 'value', 'target_end_date', 'forecast_date', 'location_name', 'scenario_id']
-
+import codebase.project_variables as project
 
 #
 # Note: The following code is a somewhat temporary solution to validation during COVID-19 crunch time. As such, we
@@ -64,7 +53,7 @@ def json_io_dict_from_quantile_csv_file(csv_fp, valid_target_names, codes, row_v
         - column_index_dict: as returned by _validate_header(): a dict that maps column_name -> its index in header (row)
         - row: the raw row being validated. NB: the order of columns is variable, but callers can use column_index_dict
             to index into row
-    :param addl_req_cols: an optional list of strings naming columns in addition to REQUIRED_COLUMNS that are required
+    :param addl_req_cols: an optional list of strings naming columns in addition to project.REQUIRED_COLUMNS that are required
     :return 2-tuple: (json_io_dict, error_messages) where the former is a "JSON IO dict" (aka 'json_io_dict' by callers)
         that contains the two types of predictions. see https://docs.zoltardata.com/ for details. json_io_dict is None
         if there were errors
@@ -98,13 +87,13 @@ def json_io_dict_from_quantile_csv_file(csv_fp, valid_target_names, codes, row_v
         for point_value in point_values:
             prediction_dicts.append({'unit': location,
                                      'target': target_name,
-                                     'class': POINT_PREDICTION_CLASS,  # PointPrediction
+                                     'class': project.POINT_PREDICTION_CLASS,  # PointPrediction
                                      'prediction': {
                                          'value': point_value}})
         if quant_quantiles:
             prediction_dicts.append({'unit': location,
                                      'target': target_name,
-                                     'class': QUANTILE_PREDICTION_CLASS,  # QuantileDistribution
+                                     'class': project.QUANTILE_PREDICTION_CLASS,  # QuantileDistribution
                                      'prediction': {
                                          'quantile': quant_quantiles,
                                          'value': quant_values}})
@@ -121,7 +110,7 @@ def json_io_dict_from_quantile_csv_file(csv_fp, valid_target_names, codes, row_v
 
         prediction_class = prediction_dict['class']
         loc_targ_to_pred_classes[(unit_name, target_name)].append(prediction_class)
-        if prediction_dict['class'] == QUANTILE_PREDICTION_CLASS:
+        if prediction_dict['class'] == project.QUANTILE_PREDICTION_CLASS:
             pred_dict_error_messages = _validate_quantile_prediction_dict(prediction_dict)  # raises o/w
             error_messages.extend(pred_dict_error_messages)
 
@@ -153,7 +142,7 @@ def _validated_rows_for_quantile_csv(csv_fp, valid_target_names, fips_codes,  ro
 
     :return: 2-tuple: (validated_rows, error_messages)
     """
-    from cdc_io import CDC_POINT_ROW_TYPE, CDC_OBSERVED_ROW_TYPE, CDC_QUANTILE_ROW_TYPE, _parse_value  # avoid circular imports
+    from .cdc_io import _parse_value  # avoid circular imports
 
 
     error_messages = []  # list of strings. return value. set below if any issues
@@ -177,7 +166,7 @@ def _validated_rows_for_quantile_csv(csv_fp, valid_target_names, fips_codes,  ro
 
         # do optional application-specific row validation. NB: error_messages is modified in-place as a side-effect
         location, target_name, row_type, quantile, value = [row[column_index_dict[column]] for column in
-                                                            REQUIRED_COLUMNS]
+                                                            project.REQUIRED_COLUMNS]
         if row_validator:
             error_messages.extend(row_validator(column_index_dict, row, fips_codes))
 
@@ -187,9 +176,9 @@ def _validated_rows_for_quantile_csv(csv_fp, valid_target_names, fips_codes,  ro
 
         # validate quantile and value
         row_type = row_type.lower()
-        is_point_row = (row_type == CDC_POINT_ROW_TYPE.lower())
-        is_observed_row = (row_type == CDC_OBSERVED_ROW_TYPE.lower())
-        is_quantile_row = (row_type == CDC_QUANTILE_ROW_TYPE.lower())
+        is_point_row = (row_type == project.CDC_POINT_ROW_TYPE.lower())
+        is_observed_row = (row_type == project.CDC_OBSERVED_ROW_TYPE.lower())
+        is_quantile_row = (row_type == project.CDC_QUANTILE_ROW_TYPE.lower())
 
         if is_observed_row:
             is_point_row = is_observed_row
@@ -230,19 +219,19 @@ def _validate_header(header, addl_req_cols):
     `json_io_dict_from_quantile_csv_file()` helper function.
 
     :param header: first row from the csv file
-    :param addl_req_cols: an optional list of strings naming columns in addition to REQUIRED_COLUMNS that are required
+    :param addl_req_cols: an optional list of strings naming columns in addition to project.REQUIRED_COLUMNS that are required
     :return: column_index_dict: a dict that maps column_name -> its index in header
     """
-    required_columns = list(REQUIRED_COLUMNS)
+    required_columns = list(project.REQUIRED_COLUMNS)
     required_columns.extend(addl_req_cols)
     counts = [header.count(required_column) == 1 for required_column in required_columns]
 
     for elem in header:
-        if elem not in POSSIBLE_COLUMNS:
+        if elem not in project.POSSIBLE_COLUMNS:
             raise RuntimeError(f"HEADER ERROR: invalid colum name '{elem}'. "
                                f"Check that all column names are contained in "
                                f" the following list and separated by commas (','): "
-                               f"{POSSIBLE_COLUMNS}")
+                               f"{project.POSSIBLE_COLUMNS}")
 
 
     if not all(counts):
@@ -324,7 +313,7 @@ def quantile_csv_rows_from_json_io_dict(json_io_dict):
     # since we've already implemented `csv_rows_from_json_io_dict()`, our approach is to use it, transforming as needed
     csv_rows = csv_rows_from_json_io_dict(json_io_dict)
     csv_rows.pop()  # skip header
-    rows = [list(REQUIRED_COLUMNS)]  # add header. rename the 'class' column to 'type'
+    rows = [list(project.REQUIRED_COLUMNS)]  # add header. rename the 'class' column to 'type'
     for location, target, pred_class, value, cat, prob, sample, quantile, family, param1, param2, param3 in csv_rows:
         if pred_class not in ['point', 'quantile']:  # keep only rows whose 'type' is 'point' or 'quantile'
             continue

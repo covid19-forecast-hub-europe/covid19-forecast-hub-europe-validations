@@ -2,46 +2,17 @@
 import csv
 import datetime
 from itertools import groupby
-
-# To list in requirements.txt
 import pymmwr
-import sys 
-# Local modules
-# date formats
-#
-sys.path.append('validation/codebase/')
-from quantile_io import POINT_PREDICTION_CLASS, BIN_DISTRIBUTION_CLASS
 
+import codebase.project_variables as project
 
-YYYY_MM_DD_DATE_FORMAT = '%Y-%m-%d'  # e.g., '2017-01-17'
-
-#
 # This file defines utilities to convert to the CDC's CSV format from Zoltar's native JSON one. NB: this is currently a
 # duplicate of https://github.com/reichlab/forecast-repository/blob/master/utils/cdc.py , which also contains the unit
 # tests.
 #
 
-
-#
-# *.cdc.csv file variables
-#
-
-CDC_OBSERVED_ROW_TYPE = "Observed"
-CDC_POINT_ROW_TYPE = 'Point'
-CDC_QUANTILE_ROW_TYPE = "Quantile"
-CDC_BIN_ROW_TYPE = 'Bin'
-CDC_CSV_HEADER = ['location', 'target', 'type', 'unit', 'bin_start_incl', 'bin_end_notincl', 'value']
-
-# This number is the internal reichlab standard: "We used week 30. I don't think this is a standardized concept outside
-# of our lab though. We use separate concepts for a "season" and a "year". So, e.g. the "2016/2017 season" starts with
-# EW30-2016 and ends with EW29-2017."
-SEASON_START_EW_NUMBER = 30
-
-
-#
 # json_io_dict_from_cdc_csv_file()
 #
-
 def json_io_dict_from_cdc_csv_file(season_start_year, cdc_csv_file_fp):
     """
     Utility that extracts the two types of predictions found in CDC CSV files (PointPredictions and BinDistributions),
@@ -82,7 +53,7 @@ def _cleaned_rows_from_cdc_csv_file(cdc_csv_file_fp):
     if (len(header) == 8) and (header[7] == ''):
         header = header[:7]
     header = [h.lower() for h in [i.replace('"', '') for i in header]]
-    if header != CDC_CSV_HEADER:
+    if header != project.CDC_CSV_HEADER:
         raise RuntimeError(f"invalid header. header={header!r}, orig_header={orig_header!r}")
 
     # collect the rows. first we load them all into memory (processing and validating them as we go)
@@ -101,9 +72,9 @@ def _cleaned_rows_from_cdc_csv_file(cdc_csv_file_fp):
 
         # validate row_type
         row_type = row_type.lower()
-        if (row_type != CDC_POINT_ROW_TYPE.lower()) and (row_type != CDC_BIN_ROW_TYPE.lower()):
-            raise RuntimeError(f"row_type was neither '{CDC_POINT_ROW_TYPE}' nor '{CDC_BIN_ROW_TYPE}': {row_type!r}")
-        is_point_row = (row_type == CDC_POINT_ROW_TYPE.lower())
+        if (row_type != project.CDC_POINT_ROW_TYPE.lower()) and (row_type != project.CDC_BIN_ROW_TYPE.lower()):
+            raise RuntimeError(f"row_type was neither '{project.CDC_POINT_ROW_TYPE}' nor '{project.CDC_BIN_ROW_TYPE}': {row_type!r}")
+        is_point_row = (row_type == project.CDC_POINT_ROW_TYPE.lower())
 
         # _parse_value() handles non-numeric cases like 'NA' and 'none', which it turns into None. o/w it's a number
         bin_start_incl = _parse_value(bin_start_incl)
@@ -177,13 +148,13 @@ def _prediction_dicts_for_csv_rows(season_start_year, rows):
             point_value = point_values[0]
             prediction_dicts.append({"unit": location_name,
                                      "target": target_name,
-                                     'class': POINT_PREDICTION_CLASS,  # PointPrediction
+                                     'class': project.POINT_PREDICTION_CLASS,  # PointPrediction
                                      'prediction': {
                                          'value': point_value}})
         if bin_cats:
             prediction_dicts.append({"unit": location_name,
                                      "target": target_name,
-                                     'class': BIN_DISTRIBUTION_CLASS,  # BinDistribution
+                                     'class': project.BIN_DISTRIBUTION_CLASS,  # BinDistribution
                                      'prediction': {
                                          "cat": bin_cats,
                                          "prob": bin_probs}})
@@ -207,7 +178,7 @@ def _process_csv_point_row(season_start_year, target_name, value):
             elif ew_week > pymmwr.mmwr_weeks_in_year(season_start_year):  # wrap forward to next EW
                 ew_week = 1
             monday_date = _monday_date_from_ew_and_season_start_year(ew_week, season_start_year)
-            return monday_date.strftime(YYYY_MM_DD_DATE_FORMAT)
+            return monday_date.strftime(project.YYYY_MM_DD_DATE_FORMAT)
     elif target_name in ['1_biweek_ahead', '2_biweek_ahead', '3_biweek_ahead', '4_biweek_ahead',
                          '5_biweek_ahead']:  # thai
         return round(value)  # some point predictions are floats
@@ -222,7 +193,7 @@ def _process_csv_point_row(season_start_year, target_name, value):
         elif ew_week > pymmwr.mmwr_weeks_in_year(season_start_year):  # wrap forward to next EW
             ew_week = 1
         monday_date = _monday_date_from_ew_and_season_start_year(ew_week, season_start_year)
-        return monday_date.strftime(YYYY_MM_DD_DATE_FORMAT)
+        return monday_date.strftime(project.YYYY_MM_DD_DATE_FORMAT)
     else:  # 'Season peak percentage', '1 wk ahead', '2 wk ahead', '3 wk ahead', '4 wk ahead', '1_biweek_ahead', '2_biweek_ahead', '3_biweek_ahead', '4_biweek_ahead',  # thai '5_biweek_ahead'
         return value
 
@@ -234,7 +205,7 @@ def _process_csv_bin_row(season_start_year, target_name, value, bin_start_incl, 
             return 'none', value  # convert back from None to original 'none' input
         elif (bin_start_incl is not None) and (bin_end_notincl is not None):  # regular (non-"none") bin
             monday_date = _monday_date_from_ew_and_season_start_year(bin_start_incl, season_start_year)
-            return monday_date.strftime(YYYY_MM_DD_DATE_FORMAT), value
+            return monday_date.strftime(project.YYYY_MM_DD_DATE_FORMAT), value
         else:
             raise RuntimeError(f"got 'Season onset' row but not both start and end were None. "
                                f"bin_start_incl={bin_start_incl}, bin_end_notincl={bin_end_notincl}")
@@ -244,7 +215,7 @@ def _process_csv_bin_row(season_start_year, target_name, value, bin_start_incl, 
                            f"{bin_start_incl}, {bin_end_notincl}")
     elif target_name == 'Season peak week':  # date target. start: an EW Monday date
         monday_date = _monday_date_from_ew_and_season_start_year(bin_start_incl, season_start_year)
-        return monday_date.strftime(YYYY_MM_DD_DATE_FORMAT), value
+        return monday_date.strftime(project.YYYY_MM_DD_DATE_FORMAT), value
     else:  # 'Season peak percentage', '1 wk ahead', '2 wk ahead', '3 wk ahead', '4 wk ahead', '1_biweek_ahead', '2_biweek_ahead', '3_biweek_ahead', '4_biweek_ahead',  # thai '5_biweek_ahead'
         return bin_start_incl, value
 
@@ -258,7 +229,7 @@ def _parse_date(value_str):
     Tries to parse value_str as a date in YYYY_MM_DD_DATE_FORMAT. Returns a datetime.date if valid, or None o/w
     """
     try:
-        return datetime.datetime.strptime(value_str, YYYY_MM_DD_DATE_FORMAT).date()
+        return datetime.datetime.strptime(value_str, project.YYYY_MM_DD_DATE_FORMAT).date()
     except ValueError:
         return None
 
@@ -279,8 +250,6 @@ def _parse_value(value_str):
 
     return _parse_date(value_str)
 
-
-#
 # ---- CDC EW utilities ----
 #
 
@@ -290,7 +259,7 @@ def _monday_date_from_ew_and_season_start_year(ew_week, season_start_year):
     :param season_start_year
     :return: a datetime.date that is the Monday of the EW corresponding to the args
     """
-    if ew_week < SEASON_START_EW_NUMBER:
+    if ew_week < project.SEASON_START_EW_NUMBER:
         sunday_date = pymmwr.mmwr_week_to_date(season_start_year + 1, ew_week)
     else:
         sunday_date = pymmwr.mmwr_week_to_date(season_start_year, ew_week)

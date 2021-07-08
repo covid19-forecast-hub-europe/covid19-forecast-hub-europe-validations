@@ -2,38 +2,22 @@ from __future__ import absolute_import
 # Standard modules
 import datetime
 from pathlib import Path
-
-# To list in requirements.txt
 import click
-import pandas as pd
-from pyprojroot import here
-
 import sys
+
 # Local modules
 sys.path.append('validation/codebase/')
 from .quantile_io import json_io_dict_from_quantile_csv_file
 
-#
-# functions specific to the COVID19 project
-#
-
-# get location codes as list
-codes = list(pd.read_csv(here('./data-locations/locations_eu.csv'))['location'])
-
-# set the range of valid targets
-VALID_TARGET_NAMES = [f"{_} wk ahead inc death" for _ in range(1, 20)] + \
-                     [f"{_} wk ahead inc case" for _ in range(1, 20)]
-
-# set valid quantiles
-VALID_QUANTILES = [0.010, 0.025, 0.050, 0.100, 0.150, 0.200, 0.250, 0.300,
-                   0.350, 0.400, 0.450, 0.500, 0.550, 0.600, 0.650, 0.700,
-                   0.750, 0.800, 0.850, 0.900, 0.950, 0.975, 0.990]
-
+# Use codes, targets, and quantiles defined in project_variables
+import codebase.project_variables as project
+codes = project.CODES
+VALID_TARGET_NAMES = project.VALID_TARGET_NAMES
+VALID_QUANTILES = project.VALID_QUANTILES
 
 #
 # validate_quantile_csv_file()
 #
-
 
 def validate_quantile_csv_file(csv_fp):
     """
