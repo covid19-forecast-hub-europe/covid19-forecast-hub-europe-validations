@@ -1,3 +1,8 @@
+"""
+Checks that:
+    - filepath (without date) matches the intended forecast folder
+"""
+
 # Standard modules
 import os
 
