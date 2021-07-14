@@ -9,11 +9,14 @@ import sys
 sys.path.append('validation/codebase/')
 from .quantile_io import json_io_dict_from_quantile_csv_file
 
-# Use codes, targets, and quantiles defined in project_variables
+# Use codes, targets, and quantiles
+#   as defined in project_variables (ultimately from hub config)
 import codebase.project_variables as project
+
 codes = project.CODES
 VALID_TARGET_NAMES = project.VALID_TARGET_NAMES
 VALID_QUANTILES = project.VALID_QUANTILES
+FORECAST_WEEK_DAY = project.FORECAST_WEEK_DAY
 
 #
 # validate_quantile_csv_file()
@@ -134,13 +137,22 @@ def covid19_row_validator(column_index_dict, row, codes):
 
     # 5.2 Forecast date should always be Mon -- no longer checked
 
-    # 5.3 For x week ahead targets, ensure x-week ahead forecast is for Sat
-    #   - set exp_target_end_date - remove 1 wk (1 wk ahead is actually 0 wk ahead), then validate it
-    weekday_diff = datetime.timedelta(days=(weekday_to_sun_based[target_end_date.weekday()] -
-                                                weekday_to_sun_based[forecast_date.weekday()]))
-    delta_days = weekday_diff + datetime.timedelta(days=(7 * step_ahead_increment - 7))
-    exp_target_end_date = forecast_date + delta_days
-
+    # 5.3 Set expected target end date from forecast date
+    # - Set which weekdays are can start within the forecast epiweek
+    #   i.e. Sunday and Monday
+    #   TODO: use our config file to get this and translate into epi-weekdays
+    overlap_days = 1, 2
+    # - Get weekday of forecast date
+    forecast_weekday = weekday_to_sun_based[forecast_date.weekday()]
+    # - Rebase forecast date to a Saturday
+      # - For allowed weekdays within epiweek, rebase to last day of prev epiweek
+    sat_forecast_date = forecast_date - datetime.timedelta(forecast_weekday)
+      # - For all other weekdays, rebase to the next epiweek (after forecast date)
+    if forecast_weekday not in overlap_days:
+        sat_forecast_date = sat_forecast_date + datetime.timedelta(7)
+    # - Go forward in weeks to set a target end date based on "n wk ahead"
+    exp_target_end_date = sat_forecast_date + datetime.timedelta(weeks = step_ahead_increment)
+    # - Validate
     if target_end_date != exp_target_end_date:
         error_messages.append(f"Error > target_end_date was not the expected Saturday. forecast_date = {forecast_date}, "
                                   f"target_end_date={target_end_date}. Expected target end date = {exp_target_end_date}, "
@@ -148,3 +160,11 @@ def covid19_row_validator(column_index_dict, row, codes):
 
     # done!
     return error_messages
+
+
+
+
+
+# forecast_date = 2021-07-09,
+# target_end_date=2021-07-17.
+# Expected target end date = 2021-07-18
