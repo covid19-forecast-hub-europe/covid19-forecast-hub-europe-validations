@@ -138,9 +138,8 @@ def covid19_row_validator(column_index_dict, row, codes):
     # 5.2 Forecast date should always be Mon -- no longer checked
 
     # 5.3 Set expected target end date from forecast date
-    # - Set which weekdays are can start within the forecast epiweek
-    #   i.e. Sunday and Monday
-    #   TODO: use our config file to get this and translate into epi-weekdays
+    # - Set which weekdays forecasts are allowed to start within the forecast epiweek
+    #   i.e. between Sunday (day 1) and latest day we allow submission for a week (Monday) 
     overlap_days = 1, 2
     # - Get weekday of forecast date
     forecast_weekday = weekday_to_sun_based[forecast_date.weekday()]
