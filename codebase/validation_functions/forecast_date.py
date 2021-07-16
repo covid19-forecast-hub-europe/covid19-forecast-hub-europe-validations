@@ -1,3 +1,10 @@
+"""
+Checks that: 
+- there is only one forecast_date in the forecast_date column
+- the date in the filename matches the date in the forecast_date col
+Compatible with any forecast date
+"""
+
 # Standard modules
 import os
 

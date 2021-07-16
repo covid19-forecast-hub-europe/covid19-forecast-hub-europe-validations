@@ -8,14 +8,20 @@ Collection of global variables used as inputs to validation functions
 """
 import pandas as pd
 from pyprojroot import here
+import yaml
+import urllib.request
+
+# Get hub config
+config = urllib.request.urlopen('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/forecasthub.yml')
+project_config = yaml.load(config.read(), Loader=yaml.FullLoader)
 
 ## covid19.py
-CODES = list(pd.read_csv(here('./data-locations/locations_eu.csv'))['location'])
-VALID_TARGET_NAMES = [f"{_} wk ahead inc death" for _ in range(1, 20)] + \
-                     [f"{_} wk ahead inc case" for _ in range(1, 20)]
-VALID_QUANTILES = [0.010, 0.025, 0.050, 0.100, 0.150, 0.200, 0.250, 0.300,
-                   0.350, 0.400, 0.450, 0.500, 0.550, 0.600, 0.650, 0.700,
-                   0.750, 0.800, 0.850, 0.900, 0.950, 0.975, 0.990]
+FORECAST_WEEK_DAY = project_config['forecast_week_day']
+CODES = list(pd.read_csv(here('./data-locations/locations_eu.csv'))['location']) # add to config
+VALID_TARGET_NAMES = [f"{_} wk ahead {target_variable}" \
+                      for _ in range(1, 20) \
+                      for target_variable in project_config['target_variables']]
+VALID_QUANTILES = project_config['forecast_type']['quantiles']
 
 ## quantile_io.py 
 BIN_DISTRIBUTION_CLASS = 'bin'
