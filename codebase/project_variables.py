@@ -7,7 +7,6 @@ Collection of global variables used as inputs to validation functions
 @author: kaths
 """
 import pandas as pd
-from pyprojroot import here
 import yaml
 import urllib.request
 
@@ -17,7 +16,7 @@ project_config = yaml.load(config.read(), Loader=yaml.FullLoader)
 
 ## covid19.py
 FORECAST_WEEK_DAY = project_config['forecast_week_day']
-CODES = pd.read_csv(here('./data-locations/locations_eu.csv')) # add to config
+CODES = pd.read_csv('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/data-locations/locations_eu.csv')
 VALID_TARGET_NAMES = [f"{_} wk ahead {target_variable}" \
                       for _ in range(1, 20) \
                       for target_variable in project_config['target_variables']]
