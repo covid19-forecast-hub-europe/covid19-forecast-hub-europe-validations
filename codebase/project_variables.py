@@ -17,7 +17,7 @@ project_config = yaml.load(config.read(), Loader=yaml.FullLoader)
 
 ## covid19.py
 FORECAST_WEEK_DAY = project_config['forecast_week_day']
-CODES = list(pd.read_csv(here('./data-locations/locations_eu.csv'))['location']) # add to config
+CODES = pd.read_csv(here('./data-locations/locations_eu.csv')) # add to config
 VALID_TARGET_NAMES = [f"{_} wk ahead {target_variable}" \
                       for _ in range(1, 20) \
                       for target_variable in project_config['target_variables']]
