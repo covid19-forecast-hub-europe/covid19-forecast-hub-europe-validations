@@ -21,13 +21,15 @@ from .validation_functions.metadata import check_for_metadata, get_metadata_mode
 from .validation_functions.forecast_filename import validate_forecast_file_name
 from .validation_functions.forecast_date import filename_match_forecast_date
 
+import codebase.project_variables as project
+
 metadata_version = 5
 
 #os.chdir('../..')
 
 # this is the root of the repository. 
 root = here()
-pop_df = pd.read_csv(open(root/'data-locations'/'locations_eu.csv')).astype({'location':str})
+pop_df = project.CODES
 
 # set range of valid scenario IDs
 VALID_SCENARIO_ID = ["forecast"] # add new scenarios here
@@ -44,7 +46,7 @@ VALID_SCENARIO_ID = ["forecast"] # add new scenarios here
     3. Find number of rows that have the value in `value` column >= the value of the `Population` column.
 
     Population data: 
-    Retrieved from the JHU timeseries data used for generating the truth data file. (See /data-locations/populations.csv)
+    Retrieved from the JHU timeseries data used for generating the truth data file.
     County population aggregated to state and state thereafter aggregated to national. 
 '''
 def get_num_invalid_predictions(forecast_filename):
