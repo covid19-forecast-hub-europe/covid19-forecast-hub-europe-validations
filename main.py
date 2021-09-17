@@ -87,17 +87,11 @@ if fresh_pr:
     # IF there are other fields changed in the PR
     if len(other_files) > 0 and len(forecasts) >0 :
         print("PR has other files changed too.")
-        if pr is not None:
-            pr.add_to_labels('other-files-updated')
 
     if len(metadatas) > 0:
         print("PR has metadata files changed.")
-        if pr is not None:
-            pr.add_to_labels('metadata-change')
 
     if len(forecasts) > 0:
-        if pr is not None:
-            pr.add_to_labels('data-submission')
 
     deleted_forecasts = False
     changed_forecasts = False
@@ -114,11 +108,9 @@ if fresh_pr:
             changed_forecasts = True
 
     if deleted_forecasts:
-        pr.add_to_labels('forecast-deleted')
         comment += "\n Your submission seem to have deleted some forecasts. Could you provide a reason for the deletion? Thank you!\n\n"
 
     if changed_forecasts:
-        pr.add_to_labels('forecast-updated')
         comment += "\n Your submission seem to have updated/renamed some forecasts. Could you provide a reason? Thank you!\n\n"
 
 # Download all forecasts
