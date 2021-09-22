@@ -91,8 +91,6 @@ if fresh_pr:
     if len(metadatas) > 0:
         print("PR has metadata files changed.")
 
-    if len(forecasts) > 0:
-
     deleted_forecasts = False
     changed_forecasts = False
 
