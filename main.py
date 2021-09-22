@@ -188,26 +188,11 @@ if is_meta_error or len(errors)>0:
     shutil.rmtree("./forecasts")
     sys.exit("\n ERRORS FOUND EXITING BUILD...")
 
-forecasts_to_vis = False
-
 if len(warnings) > 0:
     warning_message = ""
     for file in warnings.keys():
         warning_message += str(file) + " " + warnings[file] + "\n\n"
     pr.create_issue_comment(warning_message)
-
-# add visualization of forecasts
-if not local:
-    if forecasts:
-        comment += "Preview of submitted forecast:\n\n"
-        for f in forecasts:
-            if f.status != "removed":
-                forecasts_to_vis = True
-                vis_link = "https://epiforecasts.shinyapps.io/ecdc_submission/?file=" + f.raw_url
-                comment += vis_link + "\n\n"
-
-        if forecasts_to_vis:
-            pr.create_issue_comment(comment)
 
 # delete checked files from validation
 shutil.rmtree("forecasts")
