@@ -10,5 +10,4 @@ pyyaml          # test_formatting.py, metadata.py
 # Zoltar
 zoltpy
 pathlib
-json
 
