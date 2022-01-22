@@ -9,6 +9,7 @@ import glob
 from pathlib import Path
 import pprint
 import yaml
+import json
 import hashlib
 import json
 
@@ -27,8 +28,8 @@ all_forecasts = glob.glob('./data-processed/**/*-*.csv')
 pprint.pprint(all_forecasts)
 
 # meta info
-with open('forecasthub.yml') as f:
-    hub_config = yaml.safe_load(f)
+with open('project-config.json') as f:
+    hub_config = json.load(f)
 project_name = 'ECDC European COVID-19 Forecast Hub'
 project_obj = None
 conn = util.authenticate()
