@@ -7,12 +7,12 @@ Collection of global variables used as inputs to validation functions
 @author: kaths
 """
 import pandas as pd
-import yaml
-import urllib.request
+import json
+import requests 
 
 # Get hub config
-config = urllib.request.urlopen('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/forecasthub.yml')
-project_config = yaml.load(config.read(), Loader=yaml.FullLoader)
+config = requests.get('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/project-config.json')
+project_config = json.loads(config.text)
 
 ## covid19.py
 FORECAST_WEEK_DAY = project_config['forecast_week_day']
