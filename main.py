@@ -36,11 +36,11 @@ if local:
 else:
     print("Added token")
     token  = os.environ.get('GH_TOKEN')
-    print(f"Token length: {len(token)}")
 
 if token is None:
     g = Github()
 else:
+    print(f"Token length: {len(token)}")
     g = Github(token)
 
 # Mount repository
