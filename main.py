@@ -152,7 +152,7 @@ if data_processed_changes:
         # get all team_model-names in commit (usually only one)
         team_names = []
         for file in data_processed_changes:
-            team_names.append(file.contents_url.split("/")[-2])
+            team_names.append(file.filename.split("/")[-2])
         team_names = set(team_names)
 
         # if the PR doesnt add a metadatafile we have to check if there is a existing file in the main repo
