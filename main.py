@@ -27,7 +27,7 @@ pat_other = re.compile(r"^data-processed/(.+)\.csv$")
 
 # Identify if local or Github event
 local = os.environ.get('CI') != 'true'
-fresh_pr = os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target'
+fresh_pr = os.environ.get('GITHUB_EVENT_NAME') in ['pull_request', 'pull_request_target']
 
 # Set up token
 if local:
@@ -59,7 +59,7 @@ pr = None
 comment = ''
 files_changed = []
 
-if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target':
+if fresh_pr:
     # Fetch the  PR number from the event json
     pr_num = event['pull_request']['number']
     print(f"PR number: {pr_num}")
