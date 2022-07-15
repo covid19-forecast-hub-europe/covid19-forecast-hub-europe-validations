@@ -25,7 +25,7 @@ def validate_metadata_contents(metadata, filepath, cache):
         metadata_error_output.extend(['METADATA_ERROR: %s' % err for err in core.validation_errors])
         is_metadata_error = True
 
-    pat_model = re.compile(r"metadata-(.+)\.txt")
+    pat_model = re.compile(r"metadata-(.+)\.yml")
     model_name_file = re.findall(pat_model, os.path.basename(filepath))[0]
     # print(f"model_name_file: {model_name_file} \t\t filepath: {filepath}")
 
@@ -153,7 +153,7 @@ def check_for_metadata(filepath, cache= {}):
     meta_error_outputs = {}
     is_metadata_error = False
     txt_files = []
-    for metadata_file in glob.iglob(filepath + "*.txt", recursive=False):
+    for metadata_file in glob.iglob(filepath + "*.yml", recursive=False):
         txt_files += [os.path.basename(metadata_file)]
     is_metadata_error, metadata_error_output = False, "no errors"
     for metadata_filename in txt_files:
@@ -167,7 +167,7 @@ def check_for_metadata(filepath, cache= {}):
 
 def get_metadata_model(filepath):
     team_model = os.path.basename(os.path.dirname(filepath))
-    metadata_filename = "metadata-" + team_model + ".txt"
+    metadata_filename = "metadata-" + team_model + ".yml"
     metdata_dir = filepath + metadata_filename
     model_name = None
     model_abbr = None
