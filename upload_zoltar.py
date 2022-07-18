@@ -107,7 +107,7 @@ def upload_forecast(forecast_name):
     path = get_forecast_info(forecast_name)
     db = read_validation_db()
 
-    metadata = metadata_dict_for_file(list(Path(path).parent.glob('metadata-*.txt'))[0])
+    metadata = metadata_dict_for_file(list(Path(path).parent.glob('metadata-*.yml'))[0])
     if f"{metadata['model_abbr']}"  not in [m.abbreviation for m in models]:
         create_model(path, metadata)
 
