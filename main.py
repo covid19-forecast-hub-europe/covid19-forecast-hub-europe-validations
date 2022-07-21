@@ -141,7 +141,7 @@ for file in glob.glob("./forecasts/*.csv"):
 is_meta_error = []
 meta_err_output = {}
 for file in glob.glob("./forecasts/*.yml"):
-    is_meta_error, meta_err_output = check_for_metadata(filepath=file)
+    is_meta_error, meta_err_output = check_metadata_file(filepath=file)
 
 # list contains all changes in the data_processed folder
 data_processed_changes = forecasts + forecasts_err + metadatas
