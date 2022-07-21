@@ -16,7 +16,7 @@ import sys
 import shutil
 
 from codebase.test_formatting import forecast_check, print_output_errors
-from codebase.validation_functions.metadata import check_for_metadata
+from codebase.validation_functions.metadata import check_metadata_file
 from codebase.validation_functions.non_negative_forecasts import non_negative_values
 
 # Pattern that matches a forecast file added to the data-processed folder.
