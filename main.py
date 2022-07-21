@@ -138,10 +138,13 @@ for file in glob.glob("./forecasts/*.csv"):
     if len(warning) > 0:
         warnings[os.path.basename(file)] = warning
 
-is_meta_error = []
+is_meta_error = False
 meta_err_output = {}
 for file in glob.glob("./forecasts/*.yml"):
-    is_meta_error, meta_err_output = check_metadata_file(filepath=file)
+    is_metadata_error, metadata_error_output = check_metadata_file(file)
+    if is_metadata_error:
+        is_meta_error = True
+        meta_err_output[file] = metadata_error_output
 
 # list contains all changes in the data_processed folder
 data_processed_changes = forecasts + forecasts_err + metadatas
