@@ -22,7 +22,7 @@ from codebase.validation_functions.non_negative_forecasts import non_negative_va
 # Pattern that matches a forecast file added to the data-processed folder.
 # Test this regex usiing this link: https://regex101.com/r/wmajJA/1
 pat = re.compile(r"^data-processed/(.+)/\d\d\d\d-\d\d-\d\d-\1\.csv$")
-pat_meta = re.compile(r"^data-processed/(.+)/metadata-\1\.yml$")
+pat_meta = re.compile(r"^model-metadata/.+\.yml$")
 pat_other = re.compile(r"^data-processed/(.+)\.csv$")
 
 # Identify if local or Github event
@@ -161,12 +161,12 @@ if data_processed_changes:
         # if the PR doesnt add a metadatafile we have to check if there is a existing file in the main repo
         for name in team_names:
             try:
-                repo.get_contents("data-processed/{}/metadata-{}.yml".format(name, name))
+                repo.get_contents("model-metadata/{}.yml".format(name))
 
             # metadata file doesnt exist and is not added in the PR
             except github.UnknownObjectException:
                 is_meta_error = True
-                meta_err_output["{}/metadata-{}.yml".format(name, name)] = ["Missing Metadata"]
+                meta_err_output["{}.yml".format(name)] = ["Missing Metadata"]
 
 # look for .csv files that dont match pat regex
 for file in other_files:
