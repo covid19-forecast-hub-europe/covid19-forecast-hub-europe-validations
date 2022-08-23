@@ -39,7 +39,7 @@ def validate_quantile_csv_file(csv_fp):
         _, error_messages = json_io_dict_from_quantile_csv_file(
                 csv_fp = ecdc_csv_fp,
                 valid_target_names = target_names,
-                codes = codes,
+                codes = VALID_LOCATIONS,
                 row_validator = covid19_row_validator,
                 addl_req_cols = ['forecast_date', 'target_end_date'])
 
