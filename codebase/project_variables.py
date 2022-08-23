@@ -16,7 +16,7 @@ project_config = json.loads(config.text)
 
 ## covid19.py
 FORECAST_WEEK_DAY = project_config['forecast_week_day']
-CODES = pd.read_csv('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/data-locations/locations_eu.csv')
+CODES = list(pd.read_csv('https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/data-locations/locations_eu.csv')['location'])
 VALID_TARGET_NAMES = [f"{_} wk ahead {target_variable}" \
                       for _ in range(1, 20) \
                       for target_variable in project_config['target_variables']]
