@@ -13,7 +13,7 @@ from .quantile_io import json_io_dict_from_quantile_csv_file
 #   as defined in project_variables (ultimately from hub config)
 import codebase.project_variables as project
 
-codes = project.CODES
+VALID_LOCATIONS = list(project.CODES['location'])
 VALID_TARGET_NAMES = project.VALID_TARGET_NAMES
 VALID_QUANTILES = project.VALID_QUANTILES
 FORECAST_WEEK_DAY = project.FORECAST_WEEK_DAY
