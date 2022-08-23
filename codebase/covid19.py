@@ -82,22 +82,17 @@ def covid19_row_validator(column_index_dict, row, codes):
     #if float(value) < 0:
     #    error_messages.append(f"Error > negative value in forecast: {value!r}. row={row}")
 
-    # 1. validate location (ISO-2 code) against target variable
+    # 1. validate location (ISO-2 code)
     location = row[column_index_dict['location']]
-    target = row[column_index_dict['target']]
-    target_variable = target.split('wk ahead')[-1].strip().replace(' ', "_")
-    valid_locs = str(codes[codes[target_variable].notnull()].location)
-    
-    if location not in valid_locs:
-        error_messages.append(f"Error > location invalid for target {target_variable!r}: {location!r}. row={row}")
-    
+    if location not in codes:
+        error_messages.append(f"Error > invalid ISO-2 location: {location!r}. row={row}")
 
-    # 2. validate quantiles (stored as strings, checked against numeric)
     row_type = row[column_index_dict['type']]
     if row_type not in ["observed", "point", "quantile"]:
         print(row_type)
         error_messages.append(f"Error > invalid type: {row_type!r}. row={row}")
-        
+
+    # 2. validate quantiles (stored as strings, checked against numeric)
     quantile = row[column_index_dict['quantile']]
     if row[column_index_dict['type']] == 'quantile':
         try:
@@ -125,6 +120,7 @@ def covid19_row_validator(column_index_dict, row, codes):
         return error_messages  # terminate - depends on valid target_end_date
 
     # 4. validate "__ week ahead" increment - must be an int
+    target = row[column_index_dict['target']]
     try:
         step_ahead_increment = int(target.split('wk ahead')[0].strip())
     except ValueError:
@@ -160,6 +156,7 @@ def covid19_row_validator(column_index_dict, row, codes):
         error_messages.append(f"Error > target_end_date was not the expected Saturday. forecast_date = {forecast_date}, "
                                   f"target_end_date={target_end_date}. Expected target end date = {exp_target_end_date}, "
                                   f"row={row}")
+
     # done!
     return error_messages
 
