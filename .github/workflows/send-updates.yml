@@ -10,16 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: covid19-hub-key
-  
       - uses: actions/checkout@v3
         with: 
           repository: 'covid19-forecast-hub-europe/covid19-forecast-hub-europe'
-          ssh-key: covid19-hub-key
+          ssh-key: ${{ secrets.SSH_KEY }}
 
       - name: Pull & update submodules recursively
         run: |
