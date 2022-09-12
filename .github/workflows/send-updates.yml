@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
         with: 
           repository: 'covid19-forecast-hub-europe/covid19-forecast-hub-europe'
-          ssh-key: ${{ secrets.SSH_KEY }}
+          token: ${{ secrets.FORECASTHUB_TOKEN }}
 
       - name: Pull & update submodules recursively
         run: |
