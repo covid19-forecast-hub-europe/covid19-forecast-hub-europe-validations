@@ -15,7 +15,6 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           name: covid19-hub-key
-          known_hosts: unnecessary
   
       - uses: actions/checkout@v3
         with: 
