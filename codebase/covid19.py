@@ -113,12 +113,6 @@ def covid19_row_validator(column_index_dict, row, codes):
                               f"target_end_date={target_end_date}. row={row}")
         return error_messages
 
-    # 3.2 Expect a minimum 5 days between forecast_date and target_end_date
-    date_diff = target_end_date - forecast_date
-    if date_diff < datetime.timedelta(days=5):
-        error_messages.append(f"Error > target_end_date was <5 days after forecast_date: {target_end_date}. row={row}")
-        return error_messages  # terminate - depends on valid target_end_date
-
     # 4. validate "__ week ahead" increment - must be an int
     target = row[column_index_dict['target']]
     try:
