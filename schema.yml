@@ -18,6 +18,20 @@ mapping:
     'model_contributors':
         required: True
         type: seq
+        sequence: 
+          - type: map
+            mapping:
+                'name':
+                    required: True
+                    type: str
+                'affiliation':
+                    type: str
+                'email':
+                    type: str
+                'orcid':
+                    type: str
+                'twitter':
+                    type: str                    
     'website_url':
         required: True
         type: str
