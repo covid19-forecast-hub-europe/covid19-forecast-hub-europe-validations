@@ -2,6 +2,7 @@
 import os
 import glob
 import re
+import click
 
 # To list in requirements.txt
 import dateutil
@@ -27,7 +28,7 @@ def validate_metadata_contents(metadata, filepath, cache):
 
     pat_model = re.compile(r"(.+)\.yml")
     model_name_file = re.findall(pat_model, os.path.basename(filepath))[0]
-    # print(f"model_name_file: {model_name_file} \t\t filepath: {filepath}")
+    click.echo(f"* validating metadata_file '{model_name_file}.yml'...")
 
     # This is a critical error and hence do not run further checks.
     if 'model_abbr' not in metadata:
