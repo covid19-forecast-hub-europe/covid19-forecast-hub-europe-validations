@@ -22,7 +22,7 @@ mapping:
           - type: map
             mapping:
                 'name':
-                    require: True
+                    required: True
                     type: str
                 'affiliation':
                     type: str
